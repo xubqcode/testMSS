@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuyuzegang.dao.DayEndPriceProjMapper">
+  <resultMap id="BaseResultMap" type="com.wuyuzegang.proj.DayEndPriceProj">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="security_code" jdbcType="VARCHAR" property="securityCode" />
+    <result column="security_name" jdbcType="VARCHAR" property="securityName" />
+    <result column="open_price" jdbcType="DECIMAL" property="openPrice" />
+    <result column="close_price" jdbcType="DECIMAL" property="closePrice" />
+    <result column="now_price" jdbcType="DECIMAL" property="nowPrice" />
+    <result column="max_price" jdbcType="DECIMAL" property="maxPrice" />
+    <result column="min_price" jdbcType="DECIMAL" property="minPrice" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="daata_time" jdbcType="TIMESTAMP" property="daataTime" />
+    <result column="free1" jdbcType="VARCHAR" property="free1" />
+    <result column="free2" jdbcType="VARCHAR" property="free2" />
+    <result column="free3" jdbcType="VARCHAR" property="free3" />
+    <result column="num" jdbcType="DECIMAL" property="num" />
+    <result column="alllimit" jdbcType="DECIMAL" property="alllimit" />
+  </resultMap>
+  
+  <resultMap id="Five_AVG_Map" type="com.wuyuzegang.proj.DayEndPriceProj">
+   	<result column="security_code" jdbcType="VARCHAR" property="securityCode" />
+   	<result column="avge" jdbcType="VARCHAR" property="free1" />
+  </resultMap>
+  
+  <resultMap id="Trighty_Avg_Price_Map" type="com.wuyuzegang.proj.DayEndPriceProj">
+   	<result column="security_code" jdbcType="VARCHAR" property="securityCode" />
+   	<result column="arevag" jdbcType="VARCHAR" property="free1" />
+   	<result column="num" jdbcType="VARCHAR" property="free2" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, security_code, security_name, open_price, close_price, now_price, max_price, 
+    min_price, submit_time, daata_time, free1, free2, free3,num,alllimit
+  </sql>
+  
+  <sql id="Five_AVG">
+  		security_code,AVG(num) as avge
+  </sql>
+  
+  <sql id="Trighty_AVG">
+  		security_code,avg(now_price) as arevag,count(1) as num 
+  </sql>
+  
+  <select id="selectTrightyAvgPrice" resultMap="Trighty_Avg_Price_Map">
+    select  <include refid="Trighty_AVG" /> 
+    from day_end_price where
+    <![CDATA[daata_time > #{d1} and daata_time < #{d2}]]> 
+    group by security_code
+  </select>
+  
+  <select id="selectFiveAvg" resultMap="Five_AVG_Map">
+    select  <include refid="Five_AVG" /> 
+    FROM day_end_price where 
+    <![CDATA[daata_time > #{d1} and daata_time < #{d2}]]> 
+    group by security_code
+  </select>
+  
+  <select id="selectByDaataTime" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List" /> from day_end_price
+    where 
+    <![CDATA[daata_time > #{d1} and daata_time < #{d2}]]>
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from day_end_price
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from day_end_price
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wuyuzegang.proj.DayEndPriceProj">
+    insert into day_end_price (id, security_code, security_name, 
+      open_price, close_price, now_price, 
+      max_price, min_price, submit_time, 
+      daata_time, free1, free2, 
+      free3)
+    values (#{id,jdbcType=INTEGER}, #{securityCode,jdbcType=VARCHAR}, #{securityName,jdbcType=VARCHAR}, 
+      #{openPrice,jdbcType=DECIMAL}, #{closePrice,jdbcType=DECIMAL}, #{nowPrice,jdbcType=DECIMAL}, 
+      #{maxPrice,jdbcType=DECIMAL}, #{minPrice,jdbcType=DECIMAL}, #{submitTime,jdbcType=TIMESTAMP}, 
+      #{daataTime,jdbcType=TIMESTAMP}, #{free1,jdbcType=VARCHAR}, #{free2,jdbcType=VARCHAR}, 
+      #{free3,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 批量插入-->
+   <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into day_end_price 
+    ( security_code, security_name, 
+      open_price, close_price, now_price, 
+      max_price, min_price, submit_time, 
+      daata_time, num, alllimit, free1, free2,free3)
+      values
+       <foreach collection="list" item="item" index="index" separator=",">
+	      (
+	      #{item.securityCode,jdbcType=VARCHAR}, #{item.securityName,jdbcType=VARCHAR}, 
+	      #{item.openPrice,jdbcType=DECIMAL}, #{item.closePrice,jdbcType=DECIMAL}, #{item.nowPrice,jdbcType=DECIMAL}, 
+	      #{item.maxPrice,jdbcType=DECIMAL}, #{item.minPrice,jdbcType=DECIMAL}, #{item.submitTime,jdbcType=TIMESTAMP}, 
+	      #{item.daataTime,jdbcType=TIMESTAMP}, 
+	      #{item.num,jdbcType=VARCHAR},
+	      #{item.alllimit,jdbcType=VARCHAR}, 
+	      #{item.free1,jdbcType=VARCHAR}, #{item.free2,jdbcType=VARCHAR}, 
+	      #{item.free3,jdbcType=VARCHAR}
+	      )
+      </foreach>
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.wuyuzegang.proj.DayEndPriceProj">
+    insert into day_end_price
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="securityCode != null">
+        security_code,
+      </if>
+      <if test="securityName != null">
+        security_name,
+      </if>
+      <if test="openPrice != null">
+        open_price,
+      </if>
+      <if test="closePrice != null">
+        close_price,
+      </if>
+      <if test="nowPrice != null">
+        now_price,
+      </if>
+      <if test="maxPrice != null">
+        max_price,
+      </if>
+      <if test="minPrice != null">
+        min_price,
+      </if>
+      <if test="submitTime != null">
+        submit_time,
+      </if>
+      <if test="daataTime != null">
+        daata_time,
+      </if>
+      <if test="free1 != null">
+        free1,
+      </if>
+      <if test="free2 != null">
+        free2,
+      </if>
+      <if test="free3 != null">
+        free3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="securityCode != null">
+        #{securityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="securityName != null">
+        #{securityName,jdbcType=VARCHAR},
+      </if>
+      <if test="openPrice != null">
+        #{openPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="closePrice != null">
+        #{closePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="nowPrice != null">
+        #{nowPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPrice != null">
+        #{maxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="minPrice != null">
+        #{minPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="submitTime != null">
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="daataTime != null">
+        #{daataTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="free1 != null">
+        #{free1,jdbcType=VARCHAR},
+      </if>
+      <if test="free2 != null">
+        #{free2,jdbcType=VARCHAR},
+      </if>
+      <if test="free3 != null">
+        #{free3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuyuzegang.proj.DayEndPriceProj">
+    update day_end_price
+    <set>
+      <if test="securityCode != null">
+        security_code = #{securityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="securityName != null">
+        security_name = #{securityName,jdbcType=VARCHAR},
+      </if>
+      <if test="openPrice != null">
+        open_price = #{openPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="closePrice != null">
+        close_price = #{closePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="nowPrice != null">
+        now_price = #{nowPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPrice != null">
+        max_price = #{maxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="minPrice != null">
+        min_price = #{minPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="daataTime != null">
+        daata_time = #{daataTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="free1 != null">
+        free1 = #{free1,jdbcType=VARCHAR},
+      </if>
+      <if test="free2 != null">
+        free2 = #{free2,jdbcType=VARCHAR},
+      </if>
+      <if test="free3 != null">
+        free3 = #{free3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuyuzegang.proj.DayEndPriceProj">
+    update day_end_price
+    set security_code = #{securityCode,jdbcType=VARCHAR},
+      security_name = #{securityName,jdbcType=VARCHAR},
+      open_price = #{openPrice,jdbcType=DECIMAL},
+      close_price = #{closePrice,jdbcType=DECIMAL},
+      now_price = #{nowPrice,jdbcType=DECIMAL},
+      max_price = #{maxPrice,jdbcType=DECIMAL},
+      min_price = #{minPrice,jdbcType=DECIMAL},
+      submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      daata_time = #{daataTime,jdbcType=TIMESTAMP},
+      free1 = #{free1,jdbcType=VARCHAR},
+      free2 = #{free2,jdbcType=VARCHAR},
+      free3 = #{free3,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

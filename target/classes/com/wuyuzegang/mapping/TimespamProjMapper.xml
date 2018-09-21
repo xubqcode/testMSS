@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuyuzegang.dao.TimespamProjMapper">
+  <resultMap id="BaseResultMap" type="com.wuyuzegang.proj.TimespamProj">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="time_spam" jdbcType="TIMESTAMP" property="timeSpam" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, time_spam
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from timespam
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectYestoday" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from timespam
+    where  <![CDATA[time_spam < #{d1}]]> order by time_spam desc limit 1
+  </select>
+  
+   <select id="selectBeforeThrity" resultMap="BaseResultMap">
+   	 select 1 as id ,min(time_spam) as time_spam from 
+		(select time_spam from timespam where <![CDATA[time_spam < #{d1}]]> order by time_spam desc limit 31) 
+		as a
+  </select>
+  
+   <select id="selectBeforeFive" resultMap="BaseResultMap">
+   	 select 1 as id ,min(time_spam) as time_spam from 
+		(select time_spam from timespam where <![CDATA[time_spam < #{d1}]]> order by time_spam desc limit 6) 
+		as a
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from timespam
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wuyuzegang.proj.TimespamProj">
+    insert into timespam (id, time_spam)
+    values (#{id,jdbcType=INTEGER}, #{timeSpam,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuyuzegang.proj.TimespamProj">
+    insert into timespam
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="timeSpam != null">
+        time_spam,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="timeSpam != null">
+        #{timeSpam,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuyuzegang.proj.TimespamProj">
+    update timespam
+    <set>
+      <if test="timeSpam != null">
+        time_spam = #{timeSpam,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuyuzegang.proj.TimespamProj">
+    update timespam
+    set time_spam = #{timeSpam,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuyuzegang.dao.ThirtyAverageValueBeforeProjMapper">
+  <resultMap id="BaseResultMap" type="com.wuyuzegang.proj.ThirtyAverageValueBeforeProj">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="security_code" jdbcType="VARCHAR" property="securityCode" />
+    <result column="thirty_average_value" jdbcType="DECIMAL" property="thirtyAverageValue" />
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="free1" jdbcType="VARCHAR" property="free1" />
+    <result column="free3" jdbcType="VARCHAR" property="free3" />
+    <result column="free2" jdbcType="VARCHAR" property="free2" />
+  </resultMap>
+  <!--    List<ThirtyAverageValueBeforeProj> selectBydata(String dayStart, String dayEnd);-->
+  
+  <sql id="Base_Column_List">
+    id, security_code, thirty_average_value, submit_time, free1, free3, free2
+  </sql>
+  <!--  submit_time<![CDATA[>]]>#{date1} and submit_time<![CDATA[<]]{date2}  -->
+   <select id="selectBydata"  resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from thirty_average_value_before
+      where submit_time <![CDATA[>=]]> #{d1} and submit_time<![CDATA[<=]]> #{d2} 
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from thirty_average_value_before
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from thirty_average_value_before
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wuyuzegang.proj.ThirtyAverageValueBeforeProj">
+    insert into thirty_average_value_before ( security_code, thirty_average_value, 
+      submit_time, free1, free3, 
+      free2)
+    values ( #{securityCode,jdbcType=VARCHAR}, #{thirtyAverageValue,jdbcType=DECIMAL}, 
+      #{submitTime,jdbcType=TIMESTAMP}, #{free1,jdbcType=VARCHAR}, #{free3,jdbcType=VARCHAR}, 
+      #{free2,jdbcType=VARCHAR})
+  </insert>
+  
+    <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into thirty_average_value_before (id, security_code, thirty_average_value, 
+      submit_time, free1, free3, 
+      free2)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+     (#{item.id,jdbcType=INTEGER}, #{item.securityCode,jdbcType=VARCHAR}, #{item.thirtyAverageValue,jdbcType=DECIMAL}, 
+      #{item.submitTime,jdbcType=TIMESTAMP}, #{item.free1,jdbcType=VARCHAR}, #{item.free3,jdbcType=VARCHAR}, 
+      #{item.free2,jdbcType=VARCHAR})
+     </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.wuyuzegang.proj.ThirtyAverageValueBeforeProj">
+    insert into thirty_average_value_before
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="securityCode != null">
+        security_code,
+      </if>
+      <if test="thirtyAverageValue != null">
+        thirty_average_value,
+      </if>
+      <if test="submitTime != null">
+        submit_time,
+      </if>
+      <if test="free1 != null">
+        free1,
+      </if>
+      <if test="free3 != null">
+        free3,
+      </if>
+      <if test="free2 != null">
+        free2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="securityCode != null">
+        #{securityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="thirtyAverageValue != null">
+        #{thirtyAverageValue,jdbcType=DECIMAL},
+      </if>
+      <if test="submitTime != null">
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="free1 != null">
+        #{free1,jdbcType=VARCHAR},
+      </if>
+      <if test="free3 != null">
+        #{free3,jdbcType=VARCHAR},
+      </if>
+      <if test="free2 != null">
+        #{free2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wuyuzegang.proj.ThirtyAverageValueBeforeProj">
+    update thirty_average_value_before
+    <set>
+      <if test="securityCode != null">
+        security_code = #{securityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="thirtyAverageValue != null">
+        thirty_average_value = #{thirtyAverageValue,jdbcType=DECIMAL},
+      </if>
+      <if test="submitTime != null">
+        submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="free1 != null">
+        free1 = #{free1,jdbcType=VARCHAR},
+      </if>
+      <if test="free3 != null">
+        free3 = #{free3,jdbcType=VARCHAR},
+      </if>
+      <if test="free2 != null">
+        free2 = #{free2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wuyuzegang.proj.ThirtyAverageValueBeforeProj">
+    update thirty_average_value_before
+    set security_code = #{securityCode,jdbcType=VARCHAR},
+      thirty_average_value = #{thirtyAverageValue,jdbcType=DECIMAL},
+      submit_time = #{submitTime,jdbcType=TIMESTAMP},
+      free1 = #{free1,jdbcType=VARCHAR},
+      free3 = #{free3,jdbcType=VARCHAR},
+      free2 = #{free2,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
