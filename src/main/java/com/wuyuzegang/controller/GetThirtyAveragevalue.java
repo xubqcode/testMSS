@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.wuyuzegang.service.impl.ComputeMyDataImpl;
 import com.wuyuzegang.service.impl.ComputeTodayImpl;
+import com.wuyuzegang.util.CompareSecurityCodeUtil;
 
 @Controller
 @RequestMapping("/getThirtyAveragevalue")
@@ -39,6 +40,24 @@ public class GetThirtyAveragevalue {
 		logger.info("进入符合两日传30日线");
 		List<String> list = buyServices.computeBuy(yestday);
 		model.addAttribute("list",list);
+		logger.info("今天，符合两日传30日线的，被选中的股票为：");	
+//		return "showt";
+	}
+	/**
+	 * 
+	 * 比较了30日线
+	 * @param yestday
+	 * @param model
+	 * @throws InterruptedException
+	 * @throws ParseException
+	 */
+	@RequestMapping("/getBuyCode2/{yestday}")
+	public void  getBuyCode2(@PathVariable("yestday") String yestday,Model model) throws InterruptedException, ParseException {
+		logger.info("进入符合两日传30日线");
+		CompareSecurityCodeUtil pUtil = new CompareSecurityCodeUtil();
+		List<String> list = buyServices.computeBuy(yestday);
+		List<String> returnList = pUtil.comparetoThrityPrice(yestday,list);
+		model.addAttribute("list",returnList);
 		logger.info("今天，符合两日传30日线的，被选中的股票为：");	
 //		return "showt";
 	}

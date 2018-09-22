@@ -60,7 +60,7 @@
   <select id="selectByDaataTime" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List" /> from day_end_price
     where 
-    <![CDATA[daata_time > #{d1} and daata_time < #{d2}]]>
+    <![CDATA[daata_time >= #{d1} and daata_time <= #{d2}]]>
   </select>
   
   

@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.wuyuzegang.init.Init;
 import com.wuyuzegang.proj.DayEndPriceProj;
 import com.wuyuzegang.proj.HalfPastFourteenPriceProj;
 import com.wuyuzegang.proj.SecurityCodeProj;
@@ -36,10 +37,10 @@ import com.wuyuzegang.service.ITimespam;
 @RequestMapping("/getSecurityNowPrice")
 public class GetSecurityNowPrice {
 	private static Logger logger = Logger.getLogger(GetSecurityNowPrice.class);
-	public static Map<String, String> AllSecurityCodeMap = Collections.synchronizedMap(new HashMap());
-	public static Map<String, String> SHSecurityCodeMap = Collections.synchronizedMap(new HashMap());
-	public static Map<String, String> SZSecurityCodeMap = Collections.synchronizedMap(new HashMap());
-	public static Map<String, String> CYSecurityCodeMap = Collections.synchronizedMap(new HashMap());
+	public static Map<String, String> AllSecurityCodeMap 	= Init.AllSecurityCodeMap;
+	public static Map<String, String> SHSecurityCodeMap	 	= Init.SHSecurityCodeMap;
+	public static Map<String, String> SZSecurityCodeMap 	= Init.SZSecurityCodeMap;
+	public static Map<String, String> CYSecurityCodeMap 	= Init.CYSecurityCodeMap;
 	public static final BigDecimal NUMUNIT = new BigDecimal(100);
 	public static final BigDecimal PRICESUNIT = new BigDecimal(10000);
 	// 引一个services要加一个@Resource
@@ -92,10 +93,8 @@ public class GetSecurityNowPrice {
 	@RequestMapping("/getThirtyAveragevalue/sohu/{start}/{end}")
 	public void getThirtyAveragevalue(HttpServletRequest request, Model model, @PathVariable("start") String start,
 			@PathVariable("end") String end) throws InterruptedException, ParseException {
-		// 加载股票代码
-		int j = initSecurityCode();
 		List<String> securityCodeList = new ArrayList<String>();
-		logger.info("================获取上一日的30日均量,需要获取" + j + "个===================");
+		logger.info("================获取上一日的30日均量===================");
 		//
 		for (String key : SHSecurityCodeMap.keySet()) {
 			securityCodeList.add(key);
@@ -157,8 +156,6 @@ public class GetSecurityNowPrice {
 
 	@RequestMapping("/dayEndPrice")
 	public void nowPrice(HttpServletRequest request, Model model) throws InterruptedException, ParseException {
-		// 加载股票代码
-		int j = initSecurityCode();
 		logger.info("================获取现价===================");
 		// 发送获取List，分60，00，30请求 http://hq.sinajs.cn/list=sz002649,sz002491
 		String return60 = getNowPrice("sh", SHSecurityCodeMap);
@@ -167,7 +164,6 @@ public class GetSecurityNowPrice {
 		String returndata = return60 + return00 + return30;
 		String returnNum[] = returndata.split(";");
 		logger.info(">>>>>>>>>>>>>>>总返回现价信息为：" + returndata);
-		logger.info("操作总数为：" + j);
 		logger.info("返回总数为：" + returnNum.length);
 		logger.info("最后一位应该为空：" + returnNum[returnNum.length - 1]);
 		// 落地，先整理成一个List<DayEndPriceProj>
@@ -185,7 +181,6 @@ public class GetSecurityNowPrice {
 	public void halfPastFourteenPrice(HttpServletRequest request, Model model)
 			throws InterruptedException, ParseException {
 		// 加载股票代码
-		int j = initSecurityCode();
 		logger.info("================获取现价===================");
 		// 发送获取List，分60，00，30请求 http://hq.sinajs.cn/list=sz002649,sz002491
 		String return60 = getNowPrice("sh", SHSecurityCodeMap);
@@ -194,7 +189,6 @@ public class GetSecurityNowPrice {
 		String returndata = return60 + return00 + return30;
 		String returnNum[] = returndata.split(";");
 		logger.info(">>>>>>>>>>>>>>>总返回现价信息为：" + returndata);
-		logger.info("操作总数为：" + j);
 		logger.info("返回总数为：" + returnNum.length);
 		logger.info("最后一位应该为空：" + returnNum[returnNum.length - 1]);
 		// 落地，先整理成一个List<DayEndPriceProj>
@@ -298,42 +292,42 @@ public class GetSecurityNowPrice {
 		return bd.toString();
 	}
 
-	public int initSecurityCode() {
-		int j = 0;
-		logger.info("开始加载股票代码");
-		List<SecurityCodeProj> list = sc.selectAll();
-		for (int i = 0; i < list.size(); i++) {
-			SecurityCodeProj a = list.get(i);
-			AllSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
-		}
-		logger.info("==================开始过滤沪指股票代码==================");
-		for (int i = 0; i < list.size(); i++) {
-			SecurityCodeProj a = list.get(i);
-			if ("60".equals(a.getSecurityCode().substring(0, 2))) {
-				SHSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
-				j++;
-			}
-
-		}
-		logger.info("==================开始过滤深指股票代码==================");
-		for (int i = 0; i < list.size(); i++) {
-			SecurityCodeProj a = list.get(i);
-			if ("00".equals(a.getSecurityCode().substring(0, 2))) {
-				SZSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
-				j++;
-			}
-		}
-		logger.info("==================开始过滤创业板股票代码==================");
-		for (int i = 0; i < list.size(); i++) {
-			SecurityCodeProj a = list.get(i);
-			if ("30".equals(a.getSecurityCode().substring(0, 2))) {
-				CYSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
-				j++;
-			}
-		}
-		logger.info("股票代码加载完成");
-		return j;
-	}
+//	public int initSecurityCode() {
+//		int j = 0;
+//		logger.info("开始加载股票代码");
+//		List<SecurityCodeProj> list = sc.selectAll();
+//		for (int i = 0; i < list.size(); i++) {
+//			SecurityCodeProj a = list.get(i);
+//			AllSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
+//		}
+//		logger.info("==================开始过滤沪指股票代码==================");
+//		for (int i = 0; i < list.size(); i++) {
+//			SecurityCodeProj a = list.get(i);
+//			if ("60".equals(a.getSecurityCode().substring(0, 2))) {
+//				SHSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
+//				j++;
+//			}
+//
+//		}
+//		logger.info("==================开始过滤深指股票代码==================");
+//		for (int i = 0; i < list.size(); i++) {
+//			SecurityCodeProj a = list.get(i);
+//			if ("00".equals(a.getSecurityCode().substring(0, 2))) {
+//				SZSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
+//				j++;
+//			}
+//		}
+//		logger.info("==================开始过滤创业板股票代码==================");
+//		for (int i = 0; i < list.size(); i++) {
+//			SecurityCodeProj a = list.get(i);
+//			if ("30".equals(a.getSecurityCode().substring(0, 2))) {
+//				CYSecurityCodeMap.put(a.getSecurityCode(), a.getSecurityName());
+//				j++;
+//			}
+//		}
+//		logger.info("股票代码加载完成");
+//		return j;
+//	}
 
 	/**
 	 * 

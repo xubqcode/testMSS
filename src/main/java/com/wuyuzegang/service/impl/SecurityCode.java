@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.wuyuzegang.dao.SecurityCodeMapper;
@@ -17,11 +18,20 @@ import com.wuyuzegang.service.ISecurityCode;
  */
 @Service("securityCodeService")
 public class SecurityCode implements ISecurityCode {
+	private static Logger logger = Logger.getLogger(SecurityCode.class);
 	@Resource
 	private SecurityCodeMapper securityCodeMapper;
 	
 	public List<SecurityCodeProj> selectAll() {
 		return this.securityCodeMapper.selectAll();
+	}
+	
+	public void init() {
+		logger.info("加载securityCode开始");
+		
+		logger.info("加载securityCode结束");
+		
+		
 	}
 }
 

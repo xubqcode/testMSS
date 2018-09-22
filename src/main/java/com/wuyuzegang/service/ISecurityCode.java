@@ -5,4 +5,6 @@ import com.wuyuzegang.proj.SecurityCodeProj;
 
 public interface ISecurityCode {
 	public List<SecurityCodeProj> selectAll();
+	
+	public void init();
 }

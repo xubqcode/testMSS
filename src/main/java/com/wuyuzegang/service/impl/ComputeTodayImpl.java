@@ -67,7 +67,7 @@ public class ComputeTodayImpl implements IComputeMyData{
 			BigDecimal doubleFiveNum = fiveAvg.get(entry.getKey()).multiply(multiplicand);
 			BigDecimal todayNum =  new BigDecimal(entry.getValue().getNum());
 			if(doubleFiveNum.compareTo(todayNum)==1 && !"3".equals(entry.getKey().substring(0,1))) {
-				logger.info("入围代码为:"+entry.getKey()+"------今天的量："+todayNum+"-----------昨日的量:"+doubleFiveNum.divide(multiplicand));
+				logger.info("入围代码为:"+entry.getKey());
 				returnCode.add(entry.getKey());
 			}else {
 //				logger.info("被pass的:"+entry.getKey()+"------今天的量："+todayNum+"-----------昨日的量:"+doubleFiveNum.divide(multiplicand));
